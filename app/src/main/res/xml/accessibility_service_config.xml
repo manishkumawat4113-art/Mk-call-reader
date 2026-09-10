@@ -5,5 +5,4 @@
     android:accessibilityEventTypes="typeViewClicked|typeWindowContentChanged|typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackSpoken"
     android:notificationTimeout="200"
-    android:canRetrieveWindowContent="true"
-    android:description="Reads phone numbers and speaks saved contact names" />
+    android:canRetrieveWindowContent="true" />
