@@ -12,30 +12,57 @@ jobs:
 
     steps:
 
-      # 1. Download repository
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
-
-      # 2. Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-
-      # 3. Setup Gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # Check exactly what GitHub downloaded
+      - name: Check Project Files
+        run: |
+          echo "===== CURRENT DIRECTORY ====="
+          pwd
 
-      # 4. Build Debug APK
+          echo "===== ROOT FILES ====="
+          ls -la
+
+          echo "===== APP FILES ====="
+          find app -maxdepth 6 -type f | sort
+
+          echo "===== GIT TRACKED MANIFEST ====="
+          git ls-files | grep -i "AndroidManifest.xml" || true
+
+          echo "===== MANIFEST CHECK ====="
+
+          if [ -f "app/src/main/AndroidManifest.xml" ]; then
+            echo "✅ AndroidManifest.xml FOUND"
+          else
+            echo "❌ AndroidManifest.xml NOT FOUND"
+            exit 1
+          fi
+
+      - name: Check Accessibility XML
+        run: |
+          if [ -f "app/src/main/res/xml/accessibility_service_config.xml" ]; then
+            echo "✅ Accessibility config FOUND"
+          else
+            echo "❌ Accessibility config NOT FOUND"
+            exit 1
+          fi
+
       - name: Build APK
         run: gradle assembleDebug
 
-
-      # 5. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
