@@ -17,6 +17,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MK Call Reader"
+rootProject.name = "MK Call Reader Lite"
 
 include(":app")
