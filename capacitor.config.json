@@ -1,0 +1,6 @@
+{
+    "appId": "com.mk.callreader",
+    "appName": "MK Call Reader",
+    "webDir": "www",
+    "bundledWebRuntime": false
+}
