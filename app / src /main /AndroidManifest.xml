@@ -30,7 +30,6 @@
 
         </activity>
 
-
         <!-- Accessibility Service -->
         <service
             android:name=".CallReaderService"
