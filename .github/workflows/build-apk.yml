@@ -7,26 +7,35 @@ on:
       - main
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
 
     steps:
 
+      # 1. Download repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+
+      # 2. Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Make Gradle executable
-        run: chmod +x gradlew
 
+      # 3. Setup Gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+
+      # 4. Build Debug APK
       - name: Build APK
-        run: ./gradlew assembleDebug
+        run: gradle assembleDebug
 
+
+      # 5. Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
