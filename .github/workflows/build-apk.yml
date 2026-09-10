@@ -14,9 +14,6 @@ jobs:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -27,44 +24,39 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # Check exactly what GitHub downloaded
       - name: Check Project Files
         run: |
-          echo "===== CURRENT DIRECTORY ====="
-          pwd
+          echo "===== PROJECT FILES ====="
+          find app -maxdepth 10 -type f | sort
 
-          echo "===== ROOT FILES ====="
-          ls -la
+          echo "===== MANIFEST ====="
+          test -f app/src/main/AndroidManifest.xml
 
-          echo "===== APP FILES ====="
-          find app -maxdepth 6 -type f | sort
+          echo "===== ACCESSIBILITY XML ====="
+          test -f app/src/main/res/xml/accessibility_service_config.xml
 
-          echo "===== GIT TRACKED MANIFEST ====="
-          git ls-files | grep -i "AndroidManifest.xml" || true
+          echo "===== MAIN ACTIVITY ====="
+          test -f app/src/main/java/com/mk/callreader/MainActivity.kt
 
-          echo "===== MANIFEST CHECK ====="
+          echo "===== CALL READER SERVICE ====="
+          test -f app/src/main/java/com/mk/callreader/CallReaderService.kt
 
-          if [ -f "app/src/main/AndroidManifest.xml" ]; then
-            echo "✅ AndroidManifest.xml FOUND"
-          else
-            echo "❌ AndroidManifest.xml NOT FOUND"
-            exit 1
-          fi
+          echo "All required files found."
 
-      - name: Check Accessibility XML
-        run: |
-          if [ -f "app/src/main/res/xml/accessibility_service_config.xml" ]; then
-            echo "✅ Accessibility config FOUND"
-          else
-            echo "❌ Accessibility config NOT FOUND"
-            exit 1
-          fi
-
-      - name: Build APK
+      - name: Build Debug APK
         run: gradle assembleDebug
 
-      - name: Upload APK
+      - name: Build Release APK
+        run: gradle assembleRelease
+
+      - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: MK-Call-Reader-APK
+          name: MK-Call-Reader-Release
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MK-Call-Reader-Debug
           path: app/build/outputs/apk/debug/app-debug.apk
