@@ -1,0 +1,53 @@
+name: Build MK Call Reader APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-apk:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Check Project Files
+        run: |
+          echo "===== PROJECT FILES ====="
+          find app -maxdepth 10 -type f | sort
+
+          echo "===== CHECK REQUIRED FILES ====="
+
+          test -f app/src/main/AndroidManifest.xml
+          test -f app/src/main/res/xml/accessibility_service_config.xml
+          test -f app/src/main/java/com/mk/callreader/MainActivity.kt
+          test -f app/src/main/java/com/mk/callreader/CallReaderService.kt
+          test -f app/build.gradle.kts
+          test -f build.gradle.kts
+          test -f settings.gradle.kts
+          test -f gradle.properties
+
+          echo "✅ All required files found."
+
+      - name: Build Debug APK
+        run: gradle assembleDebug
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MK-Call-Reader-Debug
+          path: app/build/outputs/apk/debug/app-debug.apk
